@@ -60,3 +60,10 @@ npm run test:watch
 
 São 10 testes cobrindo `cart-in-memory` (somar quantidade, não duplicar produto, remover
 unidade, remover item, id inexistente, não mutar a lista recebida) e `formatCurrency`.
+
+## Origem
+
+O layout saiu de um projeto de aula, e o campo `author` do `package.json` guarda o
+crédito original. O que mudou depois disso está no histórico: correção do envio do
+pedido pelo WhatsApp, número da loja fora do código e os testes de `cart-in-memory`
+e `formatCurrency`.
