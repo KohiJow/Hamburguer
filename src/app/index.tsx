@@ -1,37 +1,32 @@
+import { useRef, useState } from "react";
 import { View, Text, FlatList, SectionList } from "react-native";
-import { Header } from "@/components/header";
-import { CategoryButton } from "@/components/category-button";
-
-import { CATEGORIES, MENU, Product } from "@/utils/data/products";
-
-import { ProductCard } from "@/components/product-card";
-
-import { useState, useRef } from "react";
 
 import { Link } from "expo-router";
 
+import { Header } from "@/components/header";
+import { CategoryButton } from "@/components/category-button";
+import { ProductCard } from "@/components/product-card";
+
 import { useCartStore } from "@/stores/cart-store";
 
+import { CATEGORIES, MENU, Product } from "@/utils/data/products";
+import { getCartQuantity } from "@/utils/functions/cart-summary";
+
 export default function Home() {
-  const cartStore = useCartStore();
+  const products = useCartStore((state) => state.products);
   const [category, setCategory] = useState(CATEGORIES[0]);
 
   const sectionListRef = useRef<SectionList<Product>>(null);
 
-  const cartQuantityItems = cartStore.products.reduce(
-    (total, product) => total + product.quantity,
-    0
-  );
+  const cartQuantityItems = getCartQuantity(products);
 
   function handleCategorySelect(selectedCategory: string) {
     setCategory(selectedCategory);
 
-    const sectionIndex = CATEGORIES.findIndex(
-      (category) => category === selectedCategory
-    );
+    const sectionIndex = CATEGORIES.indexOf(selectedCategory);
 
-    if (sectionListRef.current) {
-      sectionListRef.current.scrollToLocation({
+    if (sectionIndex >= 0) {
+      sectionListRef.current?.scrollToLocation({
         animated: true,
         sectionIndex,
         itemIndex: 0,
@@ -54,7 +49,8 @@ export default function Home() {
           />
         )}
         horizontal
-        className="max-h-10 mt-5"
+        accessibilityRole="tablist"
+        className="max-h-11 mt-5"
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ gap: 12, paddingHorizontal: 20 }}
       />
@@ -70,7 +66,10 @@ export default function Home() {
           </Link>
         )}
         renderSectionHeader={({ section: { title } }) => (
-          <Text className="text-xl text-white font-heading mt-8 mb-3">
+          <Text
+            className="text-xl text-foreground font-heading mt-8 mb-3"
+            accessibilityRole="header"
+          >
             {title}
           </Text>
         )}

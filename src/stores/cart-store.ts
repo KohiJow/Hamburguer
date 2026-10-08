@@ -16,18 +16,26 @@ export const CART_STORAGE_KEY = "hamburguer:cart";
 
 type CartState = {
   products: CartProduct[];
-  // Fica false ate o AsyncStorage responder, para a tela nao piscar vazia.
-  hasHydrated: boolean;
   add: (product: Product) => void;
   remove: (productId: string) => void;
   clear: () => void;
 };
 
+type HydrationState = {
+  // Fica false ate o AsyncStorage responder, para a tela nao piscar vazia.
+  hasHydrated: boolean;
+};
+
+// Fora da store persistida de proposito: qualquer setState nela grava no
+// storage, e marcar "pronto" nao deve disparar outra escrita.
+export const useCartHydration = create<HydrationState>(() => ({
+  hasHydrated: false,
+}));
+
 export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       products: [],
-      hasHydrated: false,
 
       add: (product) =>
         set((state) => ({
@@ -44,16 +52,25 @@ export const useCartStore = create<CartState>()(
     {
       name: CART_STORAGE_KEY,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: (state) => ({ products: state.products }),
+      // A leitura comeca em hydrateCart(), chamada no layout raiz depois de
+      // montar: a exportacao estatica do web renderiza sem window/localStorage.
+      skipHydration: true,
       onRehydrateStorage: () => (_state, error) => {
         if (error) {
           console.warn("Nao foi possivel ler o carrinho salvo.", error);
         }
 
-        // Roda depois que o AsyncStorage responde, com a store ja criada.
         // Marca como pronto mesmo com erro, senao a tela fica carregando.
-        useCartStore.setState({ hasHydrated: true });
+        useCartHydration.setState({ hasHydrated: true });
       },
     }
   )
 );
+
+export function hydrateCart(): Promise<void> {
+  return useCartStore.persist.rehydrate() ?? Promise.resolve();
+}
+
+export function useCartHydrated(): boolean {
+  return useCartHydration((state) => state.hasHydrated);
+}
