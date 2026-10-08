@@ -1,5 +1,6 @@
 import { Slot } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { NativeWindStyleSheet } from "nativewind";
 
 import {
   useFonts,
@@ -10,6 +11,11 @@ import {
 } from "@expo-google-fonts/inter";
 
 import { Loading } from "@/components/loading";
+
+// No web o NativeWind 2 espera um CSS do Tailwind que este projeto nao gera
+// (o bundler e o Metro), entao as classes nao viravam estilo nenhum. Com
+// "native" ele usa os estilos compilados pelo babel em todas as plataformas.
+NativeWindStyleSheet.setOutput({ default: "native" });
 
 export default function Layout() {
   const [fontsLoaded] = useFonts({
