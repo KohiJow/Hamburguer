@@ -52,3 +52,5 @@ export const Product = forwardRef<
     </TouchableOpacity>
   );
 });
+
+Product.displayName = "Product";
