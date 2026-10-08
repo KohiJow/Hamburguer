@@ -22,7 +22,7 @@ import { useState } from "react";
 
 import { useNavigation } from "expo-router";
 
-const PHONE_NUMBER = "5519988414402";
+const PHONE_NUMBER = process.env.EXPO_PUBLIC_STORE_PHONE;
 
 export default function Cart() {
   const [address, setAddress] = useState("");
@@ -48,25 +48,38 @@ export default function Cart() {
     ]);
   }
 
-  function handleOder() {
+  function handleOrder() {
+    if (cartStore.products.length === 0) {
+      return Alert.alert("Atenção", "Adicione pelo menos um item ao carrinho.");
+    }
+
     if (address.trim().length === 0) {
       return Alert.alert("Atenção", "Deve ser informado o endereço!");
     }
 
-    const products = cartStore.products
-      .map((product) => `\n ${product.quantity} ${product.title}`)
-      .join("");
+    if (!PHONE_NUMBER) {
+      return Alert.alert(
+        "Atenção",
+        "Número de WhatsApp da loja não configurado. Defina EXPO_PUBLIC_STORE_PHONE no .env."
+      );
+    }
 
-    const message = `
-    🍔 NOVO PEDIDO
-    \n Entregar em ${address}
-    
-    ${products}
-    
-    \n Valor total: ${total}`;
+    const message = [
+      "NOVO PEDIDO",
+      "",
+      `Entregar em: ${address.trim()}`,
+      "",
+      ...cartStore.products.map(
+        (product) => `${product.quantity}x ${product.title}`
+      ),
+      "",
+      `Valor total: ${total}`,
+    ].join("\n");
 
     Linking.openURL(
-      `http://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${message}`
+      `https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(
+        message
+      )}`
     );
 
     cartStore.clear();
@@ -108,16 +121,16 @@ export default function Cart() {
             <Input
               placeholder="Informe o endereço de entrega com rua, bairro, CEP, número e complemento"
               onChangeText={setAddress}
-              onSubmitEditing={handleOder} // Chama a função
-              submitBehavior="blurAndSubmit" // Muda o botao
-              returnKeyType="next" // Muda o icone
+              onSubmitEditing={handleOrder}
+              submitBehavior="blurAndSubmit"
+              returnKeyType="next"
             />
           </View>
         </ScrollView>
       </KeyboardAwareScrollView>
 
       <View className="p-5 gap-5">
-        <Button onPress={handleOder}>
+        <Button onPress={handleOrder}>
           <Button.Text>Enviar pedido</Button.Text>
           <Button.Icon>
             <Feather name="arrow-right-circle" size={20} />
