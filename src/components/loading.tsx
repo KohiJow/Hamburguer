@@ -1,11 +1,21 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 
-import colors from "tailwindcss/colors";
+import { colors } from "@/theme";
 
-export function Loading() {
+type LoadingProps = {
+  message?: string;
+};
+
+export function Loading({ message = "Carregando" }: LoadingProps) {
   return (
-    <View className="flex-1 items-center justify-center bg-slate-900">
-      <ActivityIndicator color={colors.white} />
+    <View
+      className="flex-1 items-center justify-center bg-background gap-3"
+      accessible
+      accessibilityRole="progressbar"
+      accessibilityLabel={message}
+    >
+      <ActivityIndicator color={colors.foreground} />
+      <Text className="text-muted font-body text-sm">{message}</Text>
     </View>
   );
 }

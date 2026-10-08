@@ -8,7 +8,11 @@ type LinkButtonProps = ComponentProps<typeof Link> & {
 
 export function LinkButton({ title, ...rest }: LinkButtonProps) {
   return (
-    <Link className="text-slate-300 text-center text-base font-body" {...rest}>
+    <Link
+      className="text-link text-center text-base font-body py-3"
+      accessibilityRole="link"
+      {...rest}
+    >
       {title}
     </Link>
   );

@@ -7,15 +7,23 @@ type CategoryProps = PressableProps & {
   isSelected?: boolean;
 };
 
-export function CategoryButton({ title, isSelected, ...rest }: CategoryProps) {
+export function CategoryButton({ title, isSelected = false, ...rest }: CategoryProps) {
   return (
     <Pressable
-      className={clsx("bg-slate-800 px-4 justify-center rounded-md h-10", {
-        "bg-orange-500": isSelected,
+      accessibilityRole="tab"
+      accessibilityState={{ selected: isSelected }}
+      className={clsx("bg-surface px-4 justify-center rounded-md h-11", {
+        "bg-accent": isSelected,
       })}
       {...rest}
     >
-      <Text className="text-slate-100 font-subtitle text-sm">{title}</Text>
+      <Text
+        className={clsx("text-soft font-subtitle text-sm", {
+          "text-ink font-heading": isSelected,
+        })}
+      >
+        {title}
+      </Text>
     </Pressable>
   );
 }

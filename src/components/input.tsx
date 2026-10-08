@@ -1,15 +1,42 @@
-import { TextInput, TextInputProps } from "react-native";
+import { Text, TextInput, TextInputProps, View } from "react-native";
 
-import colors from "tailwindcss/colors";
+import { clsx } from "clsx";
 
-export function Input({ ...rest }: TextInputProps) {
+import { colors } from "@/theme";
+
+type InputProps = TextInputProps & {
+  label: string;
+  errorMessage?: string;
+};
+
+export function Input({ label, errorMessage, ...rest }: InputProps) {
+  const hasError = Boolean(errorMessage);
+
   return (
-    <TextInput
-      multiline
-      textAlignVertical="top"
-      placeholderTextColor={colors.slate[400]}
-      className="h-32 bg-slate-800 rounded-md px-4 py-3 font-body text-sm text-white"
-      {...rest}
-    />
+    <View className="gap-2">
+      <Text className="text-soft font-subtitle text-sm">{label}</Text>
+
+      <TextInput
+        multiline
+        textAlignVertical="top"
+        placeholderTextColor={colors.muted}
+        accessibilityLabel={label}
+        className={clsx(
+          "h-32 bg-surface rounded-md px-4 py-3 font-body text-sm text-foreground border",
+          hasError ? "border-danger" : "border-surface"
+        )}
+        {...rest}
+      />
+
+      {hasError && (
+        <Text
+          className="text-danger font-body text-sm"
+          accessibilityRole="alert"
+          accessibilityLiveRegion="polite"
+        >
+          {errorMessage}
+        </Text>
+      )}
+    </View>
   );
 }
