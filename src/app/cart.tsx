@@ -2,9 +2,9 @@ import { View, Text, ScrollView, Alert, Linking } from "react-native";
 
 import { Header } from "@/components/header";
 
-import { productCartProps, useCartStore } from "@/stores/cart-store";
+import { CartProduct, useCartStore } from "@/stores/cart-store";
 
-import { Product } from "@/components/products";
+import { ProductCard } from "@/components/product-card";
 
 import { formatCurrency } from "@/utils/functions/format-currency";
 
@@ -36,7 +36,7 @@ export default function Cart() {
     )
   );
 
-  function handleProductRemove(product: productCartProps) {
+  function handleProductRemove(product: CartProduct) {
     Alert.alert("Remover", `Deseja remover ${product.title} do carrinho?`, [
       {
         text: "Cancelar",
@@ -98,7 +98,7 @@ export default function Cart() {
             {cartStore.products.length > 0 ? (
               <View className="border-b border-slate-700">
                 {cartStore.products.map((product) => (
-                  <Product
+                  <ProductCard
                     key={product.id}
                     data={product}
                     onPress={() => handleProductRemove(product)}

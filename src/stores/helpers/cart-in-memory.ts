@@ -1,8 +1,13 @@
-import { ProductProps } from "@/utils/data/products";
+import type { Product } from "@/utils/data/products";
 
-import { productCartProps } from "../cart-store";
+export type CartProduct = Product & {
+  quantity: number;
+};
 
-export function add(products: productCartProps[], newProduct: ProductProps) {
+export function add(
+  products: readonly CartProduct[],
+  newProduct: Product
+): CartProduct[] {
   const existingProduct = products.find(({ id }) => newProduct.id === id);
 
   if (existingProduct) {
@@ -16,7 +21,10 @@ export function add(products: productCartProps[], newProduct: ProductProps) {
   return [...products, { ...newProduct, quantity: 1 }];
 }
 
-export function remove(products: productCartProps[], productRemoveId: string) {
+export function remove(
+  products: readonly CartProduct[],
+  productRemoveId: string
+): CartProduct[] {
   const updatedProducts = products.map((product) =>
     product.id === productRemoveId
       ? {

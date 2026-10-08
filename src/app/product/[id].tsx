@@ -2,7 +2,7 @@ import { Image, Text, View } from "react-native";
 
 import { useLocalSearchParams, useNavigation, Redirect } from "expo-router";
 
-import { PRODUCTS } from "@/utils/data/products";
+import { findProductById } from "@/utils/data/products";
 
 import { formatCurrency } from "@/utils/functions/format-currency";
 
@@ -17,17 +17,20 @@ import { useCartStore } from "@/stores/cart-store";
 export default function Product() {
   const cartStore = useCartStore();
   const navigation = useNavigation();
-  const { id } = useLocalSearchParams();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
-  const product = PRODUCTS.find((item) => item.id === id);
-
-  function handleAddToCart() {
-    cartStore.add(product!);
-    navigation.goBack();
-  }
+  const product = findProductById(id);
 
   if (!product) {
     return <Redirect href={"/"} />;
+  }
+
+  function handleAddToCart() {
+    if (product) {
+      cartStore.add(product);
+    }
+
+    navigation.goBack();
   }
 
   return (

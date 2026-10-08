@@ -1,4 +1,32 @@
-const MENU = [
+import type { ImageSourcePropType } from "react-native";
+
+export type Product = {
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  cover: ImageSourcePropType;
+  thumbnail: ImageSourcePropType;
+  ingredients: string[];
+};
+
+export type MenuSection = {
+  title: string;
+  data: Product[];
+};
+
+const HOUSE_BURGER_INGREDIENTS = [
+  "Pão brioche",
+  "2x carnes smash (blend da casa) de 80g",
+  "Queijo cheddar",
+  "Alface",
+  "Tomate",
+  "Picles",
+  "Cebola",
+  "Molho da casa",
+];
+
+export const MENU: MenuSection[] = [
   {
     title: "Lanche do dia",
     data: [
@@ -10,16 +38,7 @@ const MENU = [
           "Um hamburger tão bonito que me deu fome enquanto eu fazia esse layout para o projeto...",
         cover: require("../../assets/products/cover/1.png"),
         thumbnail: require("../../assets/products/thumbnail/1.png"),
-        ingredients: [
-          "Pão brioche;",
-          "2x carnes smash (blend da casa) de 80g;",
-          "Queijo cheddar;",
-          "Alface;",
-          "Tomate;",
-          "Picles;",
-          "Cebola;",
-          "Molho da casa;",
-        ],
+        ingredients: [...HOUSE_BURGER_INGREDIENTS],
       },
     ],
   },
@@ -34,16 +53,7 @@ const MENU = [
           "Os ingredientes desse hambúrguer mudam toda semana, então você sempre terá uma surpresa...",
         cover: require("../../assets/products/cover/2.png"),
         thumbnail: require("../../assets/products/thumbnail/2.png"),
-        ingredients: [
-          "Pão brioche;",
-          "2x carnes smash (blend da casa) de 80g;",
-          "Queijo cheddar;",
-          "Alface;",
-          "Tomate;",
-          "Picles;",
-          "Cebola;",
-          "Molho da casa;",
-        ],
+        ingredients: [...HOUSE_BURGER_INGREDIENTS],
       },
       {
         id: "3",
@@ -53,16 +63,7 @@ const MENU = [
           "Aquele hambúrguer que não podemos tirar do cardápio devido aos clientes mais antigos da hamburgueria...",
         cover: require("../../assets/products/cover/3.png"),
         thumbnail: require("../../assets/products/thumbnail/3.png"),
-        ingredients: [
-          "Pão brioche;",
-          "2x carnes smash (blend da casa) de 80g;",
-          "Queijo cheddar;",
-          "Alface;",
-          "Tomate;",
-          "Picles;",
-          "Cebola;",
-          "Molho da casa;",
-        ],
+        ingredients: [...HOUSE_BURGER_INGREDIENTS],
       },
       {
         id: "4",
@@ -72,16 +73,7 @@ const MENU = [
           "Aquele que você não gosta de primeira, mas depois fica viciado e não consegue mais largar...",
         cover: require("../../assets/products/cover/4.png"),
         thumbnail: require("../../assets/products/thumbnail/4.png"),
-        ingredients: [
-          "Pão brioche;",
-          "2x carnes smash (blend da casa) de 80g;",
-          "Queijo cheddar;",
-          "Alface;",
-          "Tomate;",
-          "Picles;",
-          "Cebola;",
-          "Molho da casa;",
-        ],
+        ingredients: [...HOUSE_BURGER_INGREDIENTS],
       },
     ],
   },
@@ -97,9 +89,9 @@ const MENU = [
         cover: require("../../assets/products/cover/5.png"),
         thumbnail: require("../../assets/products/thumbnail/5.png"),
         ingredients: [
-          "1x Brownie;",
+          "1x Brownie",
           "1x Bola de sorvete a sua escolha",
-          "Escolha sua calda;",
+          "Escolha sua calda",
         ],
       },
       {
@@ -110,7 +102,7 @@ const MENU = [
           "Um delicioso Cupcake para adoçar. Escolha o sabor que você gosta...",
         cover: require("../../assets/products/cover/6.png"),
         thumbnail: require("../../assets/products/thumbnail/6.png"),
-        ingredients: ["Escolha o sabor;", "Chantilly;"],
+        ingredients: ["Escolha o sabor", "Chantilly"],
       },
     ],
   },
@@ -121,20 +113,29 @@ const MENU = [
         id: "7",
         title: "Hmmm, coquinha!",
         price: 6.9,
-        thumbnail: require("../../assets/products/thumbnail/7.png"),
-        cover: require("../../assets/products/cover/7.png"),
         description:
           "Uma coca super gelada para acompanhar o seu super lanche...",
+        cover: require("../../assets/products/cover/7.png"),
+        thumbnail: require("../../assets/products/thumbnail/7.png"),
         ingredients: [],
       },
     ],
   },
 ];
 
-const PRODUCTS = MENU.map((item) => item.data).flat();
+export const PRODUCTS: Product[] = MENU.flatMap((section) => section.data);
 
-const CATEGORIES = MENU.map((item) => item.title);
+export const CATEGORIES: string[] = MENU.map((section) => section.title);
 
-type ProductProps = (typeof PRODUCTS)[0];
+// O expo-router entrega o parametro da rota como string ou lista de strings.
+export function findProductById(
+  id: string | string[] | undefined
+): Product | undefined {
+  const productId = Array.isArray(id) ? id[0] : id;
 
-export { MENU, PRODUCTS, CATEGORIES, ProductProps };
+  if (!productId) {
+    return undefined;
+  }
+
+  return PRODUCTS.find((product) => product.id === productId);
+}

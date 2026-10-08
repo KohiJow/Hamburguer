@@ -1,40 +1,40 @@
 import { create } from "zustand";
 
-import { ProductProps } from "@/utils/data/products";
-
-import * as cartInMemory from "./helpers/cart-in-memory";
-
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export type productCartProps = ProductProps & {
-  quantity: number;
-};
+import type { Product } from "@/utils/data/products";
 
-type StateProps = {
-  products: productCartProps[];
-  add: (product: ProductProps) => void;
+import * as cartInMemory from "./helpers/cart-in-memory";
+
+import type { CartProduct } from "./helpers/cart-in-memory";
+
+export type { CartProduct };
+
+type CartState = {
+  products: CartProduct[];
+  add: (product: Product) => void;
   remove: (productId: string) => void;
   clear: () => void;
 };
 
-export const useCartStore = create(
-  persist<StateProps>(
+export const useCartStore = create<CartState>()(
+  persist(
     (set) => ({
-      products: [], // Guarda
+      products: [],
 
-      add: (product: ProductProps) =>
+      add: (product) =>
         set((state) => ({
           products: cartInMemory.add(state.products, product),
         })),
 
-      remove: (productId: string) =>
+      remove: (productId) =>
         set((state) => ({
           products: cartInMemory.remove(state.products, productId),
         })),
 
-      clear: () => set(() => ({ products: [] })),
+      clear: () => set({ products: [] }),
     }),
     {
       name: "hamburguer:cart",

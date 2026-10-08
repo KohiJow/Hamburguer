@@ -3,26 +3,26 @@ import { forwardRef } from "react";
 import {
   TouchableOpacity,
   TouchableOpacityProps,
-  ImageProps,
+  ImageSourcePropType,
   Image,
   View,
   Text,
 } from "react-native";
 
-type ProductDataProps = {
+type ProductCardData = {
   title: string;
   description: string;
-  thumbnail: ImageProps;
+  thumbnail: ImageSourcePropType;
   quantity?: number;
 };
 
-type ProductProps = TouchableOpacityProps & {
-  data: ProductDataProps;
+type ProductCardProps = TouchableOpacityProps & {
+  data: ProductCardData;
 };
 
-export const Product = forwardRef<
+export const ProductCard = forwardRef<
   React.ComponentRef<typeof TouchableOpacity>,
-  ProductProps
+  ProductCardProps
 >(({ data, ...rest }, ref) => {
   return (
     <TouchableOpacity
@@ -53,4 +53,4 @@ export const Product = forwardRef<
   );
 });
 
-Product.displayName = "Product";
+ProductCard.displayName = "ProductCard";

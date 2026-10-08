@@ -2,9 +2,9 @@ import { View, Text, FlatList, SectionList } from "react-native";
 import { Header } from "@/components/header";
 import { CategoryButton } from "@/components/category-button";
 
-import { CATEGORIES, MENU, ProductProps } from "@/utils/data/products";
+import { CATEGORIES, MENU, Product } from "@/utils/data/products";
 
-import { Product } from "@/components/products";
+import { ProductCard } from "@/components/product-card";
 
 import { useState, useRef } from "react";
 
@@ -16,7 +16,7 @@ export default function Home() {
   const cartStore = useCartStore();
   const [category, setCategory] = useState(CATEGORIES[0]);
 
-  const sectionListRef = useRef<SectionList<ProductProps>>(null);
+  const sectionListRef = useRef<SectionList<Product>>(null);
 
   const cartQuantityItems = cartStore.products.reduce(
     (total, product) => total + product.quantity,
@@ -66,7 +66,7 @@ export default function Home() {
         stickySectionHeadersEnabled={false}
         renderItem={({ item }) => (
           <Link href={`/product/${item.id}`} asChild>
-            <Product data={item} />
+            <ProductCard data={item} />
           </Link>
         )}
         renderSectionHeader={({ section: { title } }) => (
