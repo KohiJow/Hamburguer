@@ -84,6 +84,10 @@ acima de 4.5:1 de contraste; a aba selecionada usa texto escuro sobre laranja po
 - Botões, abas, links e cabeçalhos têm `accessibilityRole`; o carrinho anuncia a quantidade
   de itens, os cards anunciam nome e preço, e o stepper diz o que vai fazer ("Aumentar
   X-React", "Remover X-React do carrinho").
+- Estado (aba selecionada, botão desabilitado ou ocupado) vai por `aria-selected`,
+  `aria-disabled` e `aria-busy`, que valem no aparelho e no navegador. O `accessibilityState`
+  o react-native-web 0.20 ignora, e a aba selecionada não era anunciada no web. O ícone dentro
+  do botão fica com `aria-hidden`, porque o texto já diz o que o botão faz.
 - O botão de enviar fica desabilitado e com spinner enquanto o WhatsApp está abrindo.
 - Estados de carregando (fontes e carrinho), vazio (carrinho) e erro (tela de erro global,
   rota inexistente, endereço inválido).
@@ -96,7 +100,10 @@ acima de 4.5:1 de contraste; a aba selecionada usa texto escuro sobre laranja po
 - NativeWind 2 para estilizar com classes do Tailwind. No web o NativeWind usa os estilos
   compilados pelo babel (`NativeWindStyleSheet.setOutput({ default: "native" })`), e o
   `babel.config.js` liga o polyfill de `import.meta` do `babel-preset-expo` porque o build
-  ESM do zustand usa essa sintaxe e quebrava o bundle do navegador
+  ESM do zustand usa essa sintaxe e quebrava o bundle do navegador. O `gap` do NativeWind 2
+  é simulado com margens (negativa no pai, positiva nos filhos), o que desalinha um filho
+  `w-full` dentro de `items-center`; por isso `EmptyState` e `ErrorScreen` usam margens
+  explícitas e `self-stretch`
 - Zustand com o middleware `persist` gravando o carrinho no AsyncStorage
 - Fonte Inter via `@expo-google-fonts/inter`, ícones Feather do `@expo/vector-icons`
 - Jest com o preset `jest-expo` nos testes, ESLint com `eslint-config-expo`
@@ -114,6 +121,8 @@ navegador.
 
 O número da loja vem de `EXPO_PUBLIC_STORE_PHONE` (código do país + DDD + número, só dígitos).
 Sem essa variável, ou com ela em outro formato, o app avisa em vez de abrir o WhatsApp.
+No `expo start` ela é lida em runtime; no `npx expo export` o valor é embutido no bundle e o
+cache do Metro não muda quando a variável muda, então exporte com `--clear` depois de alterá-la.
 
 ## Scripts
 
