@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { ComponentRef, forwardRef } from "react";
 
 import {
   TouchableOpacity,
@@ -23,7 +23,7 @@ type ProductCardProps = TouchableOpacityProps & {
 };
 
 export const ProductCard = forwardRef<
-  React.ComponentRef<typeof TouchableOpacity>,
+  ComponentRef<typeof TouchableOpacity>,
   ProductCardProps
 >(({ data, ...rest }, ref) => {
   const price = formatCurrency(data.price);
