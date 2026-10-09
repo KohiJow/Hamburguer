@@ -1,9 +1,10 @@
-import { forwardRef, ReactNode } from "react";
+import { ComponentRef, forwardRef, ReactNode } from "react";
 import {
   ActivityIndicator,
   TouchableOpacity,
   TouchableOpacityProps,
   Text,
+  View,
 } from "react-native";
 
 import { clsx } from "clsx";
@@ -24,33 +25,31 @@ type ButtonIconProps = {
 };
 
 // forwardRef para o Link asChild do expo-router conseguir envolver o botao.
-const ButtonRoot = forwardRef<
-  React.ComponentRef<typeof TouchableOpacity>,
-  ButtonProps
->(({ children, isLoading = false, disabled, accessibilityState, ...rest }, ref) => {
-  const isDisabled = Boolean(disabled) || isLoading;
+const ButtonRoot = forwardRef<ComponentRef<typeof TouchableOpacity>, ButtonProps>(
+  ({ children, isLoading = false, disabled, ...rest }, ref) => {
+    const isDisabled = Boolean(disabled) || isLoading;
 
-  return (
-    <TouchableOpacity
-      ref={ref}
-      accessibilityRole="button"
-      accessibilityState={{
-        ...accessibilityState,
-        disabled: isDisabled,
-        busy: isLoading,
-      }}
-      disabled={isDisabled}
-      className={clsx(
-        "h-12 px-4 bg-primary rounded-md items-center justify-center flex-row",
-        { "opacity-60": isDisabled }
-      )}
-      activeOpacity={0.7}
-      {...rest}
-    >
-      {isLoading ? <ActivityIndicator color={colors.ink} /> : children}
-    </TouchableOpacity>
-  );
-});
+    return (
+      <TouchableOpacity
+        ref={ref}
+        accessibilityRole="button"
+        // aria-* vale no aparelho e no navegador; accessibilityState o
+        // react-native-web ignora.
+        aria-disabled={isDisabled}
+        aria-busy={isLoading}
+        disabled={isDisabled}
+        className={clsx(
+          "h-12 px-4 bg-primary rounded-md items-center justify-center flex-row",
+          { "opacity-60": isDisabled }
+        )}
+        activeOpacity={0.7}
+        {...rest}
+      >
+        {isLoading ? <ActivityIndicator color={colors.ink} /> : children}
+      </TouchableOpacity>
+    );
+  }
+);
 
 ButtonRoot.displayName = "Button";
 
@@ -60,8 +59,10 @@ function ButtonText({ children }: ButtonTextProps) {
   );
 }
 
+// O icone e decorativo: o texto do botao ja diz o que ele faz. Sem isso o
+// leitor de tela do navegador anuncia o glifo da fonte antes do rotulo.
 function ButtonIcon({ children }: ButtonIconProps) {
-  return children;
+  return <View aria-hidden>{children}</View>;
 }
 
 const Button = Object.assign(ButtonRoot, {

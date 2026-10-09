@@ -11,7 +11,9 @@ export function CategoryButton({ title, isSelected = false, ...rest }: CategoryP
   return (
     <Pressable
       accessibilityRole="tab"
-      accessibilityState={{ selected: isSelected }}
+      // aria-* vale no aparelho e no navegador; accessibilityState o
+      // react-native-web ignora e a aba selecionada nao era anunciada.
+      aria-selected={isSelected}
       className={clsx("bg-surface px-4 justify-center rounded-md h-11", {
         "bg-accent": isSelected,
       })}
