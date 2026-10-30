@@ -1,39 +1,43 @@
 # Hamburguer
+English | [Português](README.pt-BR.md)
 
-App mobile de hamburgueria feito em React Native com Expo e TypeScript. O cardápio fica
-num arquivo local, o carrinho é guardado no aparelho e o pedido sai como mensagem de
-WhatsApp. Não existe backend.
+Mobile app for a burger shop, built in React Native with Expo and TypeScript. The menu lives in
+a local file, the cart is stored on the device and the order goes out as a WhatsApp message.
+There is no backend.
 
-## Fluxo do pedido
+## Order flow
 
-1. Na home, o cliente escolhe uma categoria e toca num produto. Cada item mostra foto,
-   descrição e preço.
-2. Na tela do produto, vê preço, descrição e ingredientes, e toca em "Adicionar ao pedido".
-3. O ícone de sacola aparece no topo com a quantidade de itens (acima de 9 vira "9+").
-   Tocando nele, vai ao carrinho.
-4. No carrinho, cada item tem preço unitário, subtotal e um controle de mais e menos.
-   Na última unidade o botão de menos vira lixeira e pede confirmação antes de remover.
-5. O cliente informa o endereço de entrega e toca em "Enviar pedido". Se o endereço estiver
-   vazio ou curto demais, o erro aparece embaixo do campo. Se o número da loja não estiver
-   configurado, um aviso explica o que falta.
-6. O app abre o WhatsApp com a lista de itens (com subtotais), o endereço e o total já
-   escritos. Só depois que o WhatsApp abriu o carrinho é limpo; se não abrir, o carrinho
-   continua salvo e um aviso explica.
+1. On the home screen, the customer picks a category and taps a product. Each item shows a
+   photo, description and price.
+2. On the product screen, they see the price, description and ingredients, and tap
+   "Adicionar ao pedido" (Add to order).
+3. The bag icon appears at the top with the number of items (above 9 it shows "9+").
+   Tapping it opens the cart.
+4. In the cart, each item has its unit price, subtotal and a plus and minus control.
+   On the last unit, the minus button becomes a trash can and asks for confirmation before
+   removing the item.
+5. The customer enters the delivery address and taps "Enviar pedido" (Send order). If the
+   address is empty or too short, the error appears below the field. If the store's number is
+   not configured, a notice explains what is missing.
+6. The app opens WhatsApp with the list of items (with subtotals), the address and the total
+   already written. The cart is cleared only after WhatsApp has opened; if it does not open,
+   the cart stays saved and a notice explains why.
 
-## Telas
+## Screens
 
-| Arquivo | O que faz |
+| File | What it does |
 | --- | --- |
-| `src/app/_layout.tsx` | Carrega a fonte Inter (se falhar, segue com a fonte do sistema), dispara a leitura do carrinho salvo, envolve o app num `SafeAreaView` escuro e exporta o `ErrorBoundary` com botão de tentar de novo |
-| `src/app/index.tsx` | Home: abas de categoria e `SectionList` do cardápio. Tocar numa categoria rola até a seção correspondente |
-| `src/app/product/[id].tsx` | Detalhe do produto: capa, preço, descrição e ingredientes num scroll, com o botão fixo embaixo. Id desconhecido redireciona para a home |
-| `src/app/cart.tsx` | Carrinho: mostra "carregando" até o storage responder, estado vazio com atalho para o cardápio, itens com stepper, total, endereço com erro inline e envio pelo WhatsApp |
-| `src/app/+not-found.tsx` | Rota inexistente, com atalho para o cardápio |
+| `src/app/_layout.tsx` | Loads the Inter font (if that fails, it carries on with the system font), starts reading the saved cart, wraps the app in a dark `SafeAreaView` and exports the `ErrorBoundary` with a try-again button |
+| `src/app/index.tsx` | Home: category tabs and the menu `SectionList`. Tapping a category scrolls to the matching section |
+| `src/app/product/[id].tsx` | Product detail: cover image, price, description and ingredients in a scroll view, with the button fixed at the bottom. An unknown id redirects to the home screen |
+| `src/app/cart.tsx` | Cart: shows "carregando" (loading) until the storage responds, an empty state with a shortcut to the menu, items with a stepper, the total, the address with an inline error, and sending through WhatsApp |
+| `src/app/+not-found.tsx` | Unknown route, with a shortcut to the menu |
 
-O cardápio tem 7 produtos em 4 categorias (Lanche do dia, Promoções, Sobremesa, Bebidas) e
-está escrito à mão em `src/utils/data/products.ts`, junto com as imagens em `src/assets/products`.
+The menu has 7 products in 4 categories: Lanche do dia (sandwich of the day), Promoções
+(deals), Sobremesa (dessert) and Bebidas (drinks). It is written by hand in
+`src/utils/data/products.ts`, with its images in `src/assets/products`.
 
-## Estrutura
+## Structure
 
 ```
 src/
@@ -46,69 +50,72 @@ src/
   test-utils/       fábricas de produto para os testes
 ```
 
-## Lógica fora das telas
+## Logic outside the screens
 
-As telas só ligam eventos a funções puras, que são as que têm teste:
+The screens only connect events to pure functions, and those are the ones with tests:
 
-- `stores/helpers/cart-in-memory.ts`: `add` soma na quantidade quando o produto já está lá;
-  `remove` tira uma unidade e descarta o item quando chega a zero. Nenhuma das duas altera a
-  lista recebida.
-- `utils/functions/cart-summary.ts`: `getCartQuantity`, `getCartTotal` e `getItemSubtotal`,
-  com arredondamento para centavos.
-- `utils/functions/order.ts`: `validateOrder` devolve `{ ok: true }` ou o campo com problema
-  (`items`, `address` ou `storePhone`) e a mensagem; `buildOrderMessage` monta o texto do
-  pedido; `buildWhatsAppUrl` codifica a mensagem na URL da API do WhatsApp;
-  `isValidStorePhone` aceita só dígitos com código do país e DDD.
-- `utils/functions/dialog.ts`: `showMessage` e `confirmAction` usam `Alert` no aparelho e
-  `window.alert`/`window.confirm` no navegador, onde o `Alert` do react-native-web não faz nada.
-- `utils/data/products.ts`: tipos `Product` e `MenuSection`, `MENU`, `PRODUCTS`, `CATEGORIES`
-  e `findProductById`, que aceita o parâmetro de rota como string ou lista.
+- `stores/helpers/cart-in-memory.ts`: `add` increases the quantity when the product is already
+  in the cart; `remove` takes away one unit and drops the item when it reaches zero. Neither of
+  them changes the list it receives.
+- `utils/functions/cart-summary.ts`: `getCartQuantity`, `getCartTotal` and `getItemSubtotal`,
+  rounded to cents.
+- `utils/functions/order.ts`: `validateOrder` returns `{ ok: true }` or the field with the
+  problem (`items`, `address` or `storePhone`) and the message; `buildOrderMessage` builds the
+  order text; `buildWhatsAppUrl` encodes the message into the WhatsApp API URL;
+  `isValidStorePhone` accepts only digits, with the country code and the DDD (Brazilian area
+  code).
+- `utils/functions/dialog.ts`: `showMessage` and `confirmAction` use `Alert` on the device and
+  `window.alert`/`window.confirm` in the browser, where react-native-web's `Alert` does nothing.
+- `utils/data/products.ts`: the `Product` and `MenuSection` types, `MENU`, `PRODUCTS`,
+  `CATEGORIES` and `findProductById`, which accepts the route parameter as a string or a list.
 
-A store (`stores/cart-store.ts`) persiste só a lista de produtos no AsyncStorage (chave
-`hamburguer:cart`). A leitura começa em `hydrateCart()`, chamada no layout raiz depois de
-montar, e `useCartHydrated()` diz quando terminou (inclusive se o storage estiver corrompido,
-caso em que o carrinho começa vazio e um aviso vai para o console).
+The store (`stores/cart-store.ts`) persists only the product list in AsyncStorage (key
+`hamburguer:cart`). Reading starts in `hydrateCart()`, called in the root layout after it
+mounts, and `useCartHydrated()` tells when it has finished (even if the storage is corrupted,
+in which case the cart starts empty and a warning goes to the console).
 
-## Tema
+## Theme
 
-Cores e fontes ficam em `src/theme/tokens.json`. O `tailwind.config.js` lê esse arquivo para
-gerar as classes (`bg-background`, `bg-surface`, `text-muted`, `text-primary`, `bg-accent`,
-`text-danger`...) e `src/theme/index.ts` exporta os mesmos valores para o que precisa de cor
-em JavaScript (ícones, placeholder, spinner). Todos os pares de texto e fundo usados ficam
-acima de 4.5:1 de contraste; a aba selecionada usa texto escuro sobre laranja por isso.
+Colors and fonts live in `src/theme/tokens.json`. `tailwind.config.js` reads that file to
+generate the classes (`bg-background`, `bg-surface`, `text-muted`, `text-primary`, `bg-accent`,
+`text-danger`...) and `src/theme/index.ts` exports the same values for whatever needs a color
+in JavaScript (icons, placeholder, spinner). Every text and background pair in use stays above
+a 4.5:1 contrast ratio; that is why the selected tab uses dark text on orange.
 
-## Acessibilidade e UI
+## Accessibility and UI
 
-- Todo alvo de toque tem pelo menos 44px: abas de categoria, botão do carrinho, stepper,
-  botões e links.
-- Botões, abas, links e cabeçalhos têm `accessibilityRole`; o carrinho anuncia a quantidade
-  de itens, os cards anunciam nome e preço, e o stepper diz o que vai fazer ("Aumentar
-  X-React", "Remover X-React do carrinho").
-- Estado (aba selecionada, botão desabilitado ou ocupado) vai por `aria-selected`,
-  `aria-disabled` e `aria-busy`, que valem no aparelho e no navegador. O `accessibilityState`
-  o react-native-web 0.20 ignora, e a aba selecionada não era anunciada no web. O ícone dentro
-  do botão fica com `aria-hidden`, porque o texto já diz o que o botão faz.
-- O botão de enviar fica desabilitado e com spinner enquanto o WhatsApp está abrindo.
-- Estados de carregando (fontes e carrinho), vazio (carrinho) e erro (tela de erro global,
-  rota inexistente, endereço inválido).
+- Every touch target is at least 44px: category tabs, the cart button, the stepper, buttons
+  and links.
+- Buttons, tabs, links and headers have `accessibilityRole`; the cart announces the number of
+  items, the cards announce name and price, and the stepper says what it is about to do, for
+  example "Aumentar X-React" (Increase X-React) and "Remover X-React do carrinho" (Remove
+  X-React from the cart).
+- State (selected tab, disabled or busy button) goes through `aria-selected`,
+  `aria-disabled` and `aria-busy`, which work both on the device and in the browser.
+  `accessibilityState` is ignored by react-native-web 0.20, and the selected tab was not
+  announced on the web. The icon inside the button gets `aria-hidden`, because the text already
+  says what the button does.
+- The send button stays disabled and shows a spinner while WhatsApp is opening.
+- Loading states (fonts and cart), an empty state (cart) and error states (global error screen,
+  unknown route, invalid address).
 
 ## Stack
 
-- Expo 54 e React Native 0.79, TypeScript em modo `strict` com `noUncheckedIndexedAccess`,
-  `noUnusedLocals`, `noUnusedParameters` e `noImplicitReturns`
-- `expo-router` 5 para navegação por arquivos, com `typedRoutes` ligado
-- NativeWind 2 para estilizar com classes do Tailwind. No web o NativeWind usa os estilos
-  compilados pelo babel (`NativeWindStyleSheet.setOutput({ default: "native" })`), e o
-  `babel.config.js` liga o polyfill de `import.meta` do `babel-preset-expo` porque o build
-  ESM do zustand usa essa sintaxe e quebrava o bundle do navegador. O `gap` do NativeWind 2
-  é simulado com margens (negativa no pai, positiva nos filhos), o que desalinha um filho
-  `w-full` dentro de `items-center`; por isso `EmptyState` e `ErrorScreen` usam margens
-  explícitas e `self-stretch`
-- Zustand com o middleware `persist` gravando o carrinho no AsyncStorage
-- Fonte Inter via `@expo-google-fonts/inter`, ícones Feather do `@expo/vector-icons`
-- Jest com o preset `jest-expo` nos testes, ESLint com `eslint-config-expo`
+- Expo 54 and React Native 0.79, TypeScript in `strict` mode with `noUncheckedIndexedAccess`,
+  `noUnusedLocals`, `noUnusedParameters` and `noImplicitReturns`
+- `expo-router` 5 for file-based navigation, with `typedRoutes` turned on
+- NativeWind 2 for styling with Tailwind classes. On the web, NativeWind uses the styles
+  compiled by babel (`NativeWindStyleSheet.setOutput({ default: "native" })`), and
+  `babel.config.js` turns on the `import.meta` polyfill from `babel-preset-expo`, because
+  zustand's ESM build uses that syntax and was breaking the browser bundle. NativeWind 2's
+  `gap` is emulated with margins (negative on the parent, positive on the children), which
+  misaligns a `w-full` child inside `items-center`; that is why `EmptyState` and `ErrorScreen`
+  use explicit margins and `self-stretch`
+- Zustand with the `persist` middleware saving the cart to AsyncStorage
+- Inter font via `@expo-google-fonts/inter`, Feather icons from `@expo/vector-icons`
+- Jest with the `jest-expo` preset for the tests, ESLint with `eslint-config-expo`
 
-## Rodando
+## Running
 
 ```bash
 npm install
@@ -116,13 +123,14 @@ cp .env.example .env   # número de WhatsApp que recebe os pedidos
 npx expo start
 ```
 
-Abra pelo QR code no Expo Go ou rode num emulador Android ou iOS. `npm run web` abre no
-navegador.
+Open it through the QR code in Expo Go or run it on an Android or iOS emulator. `npm run web`
+opens it in the browser.
 
-O número da loja vem de `EXPO_PUBLIC_STORE_PHONE` (código do país + DDD + número, só dígitos).
-Sem essa variável, ou com ela em outro formato, o app avisa em vez de abrir o WhatsApp.
-No `expo start` ela é lida em runtime; no `npx expo export` o valor é embutido no bundle e o
-cache do Metro não muda quando a variável muda, então exporte com `--clear` depois de alterá-la.
+The store's number comes from `EXPO_PUBLIC_STORE_PHONE` (country code + DDD + number, digits
+only). Without this variable, or with it in another format, the app shows a warning instead of
+opening WhatsApp. With `expo start` it is read at runtime; with `npx expo export` the value is
+embedded in the bundle and the Metro cache does not change when the variable changes, so export
+with `--clear` after changing it.
 
 ## Scripts
 
@@ -134,33 +142,35 @@ npm run lint         # eslint
 npm run check        # typecheck, lint e testes em sequência
 ```
 
-O workflow em `.github/workflows/ci.yml` roda `check` a cada push e pull request.
+The workflow in `.github/workflows/ci.yml` runs `check` on every push and pull request.
 
-## Testes
+## Tests
 
-São 50 testes unitários, sem snapshot:
+There are 50 unit tests, with no snapshots:
 
-- `cart-in-memory`: somar quantidade, não duplicar produto, remover unidade, remover item,
-  só mexer no produto informado, id inexistente, não mutar a lista recebida
-- `cart-summary`: quantidade, total, subtotal e arredondamento
-- `order`: telefone da loja, endereço mínimo, ordem das validações, texto do pedido e
-  codificação da URL (ida e volta)
-- `dialog`: o `confirmAction` resolve `true` no confirmar e `false` no cancelar ou fechar
-- `products`: ids únicos, seções e categorias coerentes, preço e imagens presentes,
-  `findProductById` com string, lista e id desconhecido
-- `cart-store`: hidratação, add/remove/clear, o que vai para o AsyncStorage, carrinho salvo
-  recuperado na próxima abertura e storage corrompido sem travar o app
-- `formatCurrency` e os rótulos do badge e do stepper
+- `cart-in-memory`: adding to the quantity, not duplicating a product, removing a unit,
+  removing an item, only touching the given product, unknown id, not mutating the list it
+  receives
+- `cart-summary`: quantity, total, subtotal and rounding
+- `order`: store phone, minimum address length, sequence of the validations, order text and
+  URL encoding (round trip)
+- `dialog`: `confirmAction` resolves `true` on confirm and `false` on cancel or close
+- `products`: unique ids, consistent sections and categories, price and images present,
+  `findProductById` with a string, a list and an unknown id
+- `cart-store`: hydration, add/remove/clear, what goes into AsyncStorage, the saved cart
+  restored the next time the app opens, and corrupted storage without freezing the app
+- `formatCurrency` and the badge and stepper labels
 
-## Observações
+## Notes
 
-`npx expo-doctor` aponta que `react-native`, `expo-router` e outros pacotes estão nas versões
-do SDK 53 enquanto o `expo` é o 54. Tudo compila, testa e roda no web assim, mas alinhar as
-versões pede teste em aparelho e ficou fora deste trabalho.
+`npx expo-doctor` reports that `react-native`, `expo-router` and other packages are on the
+SDK 53 versions while `expo` is on 54. As things are, everything compiles, gets tested and runs
+on the web, but aligning the versions requires testing on a device and was left out of this
+work.
 
-## Origem
+## Origin
 
-O layout saiu de um projeto de aula, e o campo `author` do `package.json` guarda o
-crédito original. O que mudou depois disso está no histórico: correção do envio do
-pedido pelo WhatsApp, número da loja fora do código, lógica separada em funções puras
-com testes, componentes com acessibilidade, tema único e lint.
+The layout came from a class project, and the `author` field in `package.json` keeps the
+original credit. What changed after that is in the history: a fix for sending the order through
+WhatsApp, the store's number moved out of the code, logic split into pure functions with tests,
+accessible components, a single theme, and linting.
